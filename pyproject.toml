@@ -4,6 +4,9 @@ version = "0.1.0"
 description = ""
 authors = ["lrossett <lrossett@redhat.com>"]
 
+[tool.poetry.scripts]
+mbctl = 'mbctl.cli:main'
+
 [tool.poetry.dependencies]
 python = "^3.6"
 requests = "^2.25.1"

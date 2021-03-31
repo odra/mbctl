@@ -10,10 +10,14 @@ from . import handlers
 from mblib import errors
 
 
+
+output_parser = argparse.ArgumentParser(add_help=False)
+output_parser.add_argument('--output', '-o', type=str, choices=['text', 'json'], default='text')
+
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(help='MBS Client CLI')
 # version subcommand
-parser_version = subparsers.add_parser('version', help='shows CLI version')
+parser_version = subparsers.add_parser('version', help='shows CLI version', parents=[output_parser])
 parser_version.set_defaults(_handler=handlers.version)
 # list
 parser_list = subparsers.add_parser('list', help='lists module filters')
@@ -49,6 +53,6 @@ def main(*args, **kwargs):
     for line in run(*args, **kwargs):
       print(line)
     sys.exit(0)
-  except errors.mbctlError as e:
+  except errors.MBError as e:
     sys.stderr.write(f'{e}\n')
     sys.exit(1)
