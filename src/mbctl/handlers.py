@@ -4,33 +4,34 @@ This module contains CLI hanlders for each subcommand.
 import json
 
 from mbctl import __version__
-from mblib import httpclient
+from mblib import httpclient, parser
+from mblib import version as version_lib
+from mblib import build as build_lib
 
 
-def version(output='text'):
+def version(output='text', **kwargs):
   """
   Shows the CLI version
   """
-  c = httpclient.Client('https://mbs.fedoraproject.org/module-build-service/1')
+  c = httpclient.Client(kwargs['server_url'])
   code, data = c.request('/about')
   parsed = json.loads(data)
-  if output == 'text':
-    yield f'mbctl : {__version__}'
-    yield f'module-build-service: {parsed["version"]}'
-    yield f'api-version: {parsed["api_version"]}'
-  else:
-    yield json.dumps({
-      'mbctl': __version__,
-      'module-build-service': parsed['version'],
-      'api-version': parsed['api_version']
-    }, indent=4, sort_keys=True)
+  model = version_lib.models.Version(__version__, parsed['version'], parsed['api_version'])
+  
+  return parser.parse(model, output=output)
 
-def list():
+def list(output='text', **kwargs):
   """
   lists builds based on filtered data
   """
-  pass
-
+  c = httpclient.Client(kwargs['server_url'])
+  code, data = c.request('/module-builds')
+  parsed = json.loads(data)
+  model = build_lib.models.BuildList(*parsed['items'])
+  output = output
+  if output == 'text':
+    output = 'table'
+  return parser.parse(model, output=output)
 
 def build():
   """

@@ -1,3 +1,7 @@
+"""
+Error module.
+"""
+
 class MBError(Exception):
   """
   Base project exception, specelized exceptions should inherit from this

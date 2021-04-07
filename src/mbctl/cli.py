@@ -11,18 +11,19 @@ from mblib import errors
 
 
 
-output_parser = argparse.ArgumentParser(add_help=False)
-output_parser.add_argument('--output', '-o', type=str, choices=['text', 'json'], default='text')
+base_parser = argparse.ArgumentParser(add_help=False)
+base_parser.add_argument('--output', '-o', type=str, choices=['text', 'json'], default='text')
+base_parser.add_argument('--server-url', '-s', type=str, default='https://mbs.fedoraproject.org/module-build-service/1')
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(help='MBS Client CLI')
 # version subcommand
-parser_version = subparsers.add_parser('version', help='shows CLI version', parents=[output_parser])
+parser_version = subparsers.add_parser('version', help='shows system version, both client and server', parents=[base_parser])
 parser_version.set_defaults(_handler=handlers.version)
 # list
-parser_list = subparsers.add_parser('list', help='lists module filters')
-parser_list.add_argument('--state', '-s', type=str, help='filter by build state', default='')
-parser_list.add_argument('--id', type=str, help='filter by build id', default='')
+parser_list = subparsers.add_parser('list', help='lists module filters',  parents=[base_parser])
+# parser_list.add_argument('--state', '-s', type=str, help='filter by build state', default='')
+# parser_list.add_argument('--id', type=str, help='filter by build id', default='')
 parser_list.set_defaults(_handler=handlers.list)
 # build
 parser_build = subparsers.add_parser('build', help='builds a mobule')
@@ -41,8 +42,8 @@ def run(*args, **kwargs):
     params = {k:v for k,v in vars(ns).items() if k != '_handler'}
     for line in ns._handler(**params):
       yield line
-  except AttributeError:
-    raise errors.MBError('Invalid CLI usage')
+  except AttributeError as e:
+    raise errors.MBError('Invalid CLI, run "--help" for usage documentation.')
 
 
 def main(*args, **kwargs):
