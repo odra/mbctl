@@ -22,26 +22,17 @@ def parse(model, output='text'):
 def parse_text(model):
   """
   Parses a model into a raw text string.
+
+  The model needs to implement `__str__`.
   """
-  for k, v in model.data():
-    yield f'{k}: {v}'
+  return str(model)
 
 
 def parse_json(model):
   """
   Parses a model into a json string.
-  """
-  data = {}
-  for k, v in model.data():
-    data[k] = v
-  yield json.dumps(data, indent=4, sort_keys=True)
 
-
-def parse_table(model):
+  The model needs to implement a `to_python` method
+  to return a object that can be dumped to json, such as a dict or list.
   """
-  Parse model as table.
-  """
-  data = [model.keys()] + model.values()
-  table = AsciiTable(data)
-  for line in table.table.split('\n'):
-    yield line
+  return json.dumps(model.as_python(), indent=4, sort_keys=True)

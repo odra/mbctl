@@ -39,9 +39,9 @@ def run(*args, **kwargs):
   ns = parser.parse_args(*args, **kwargs)
   try:
     params = {k:v for k,v in vars(ns).items() if k != '_handler'}
-    for line in ns._handler(**params):
-      yield line
+    return ns._handler(**params)
   except AttributeError as e:
+    print(e)
     raise errors.MBError('Invalid CLI, run "--help" for usage documentation.')
 
 
@@ -50,8 +50,7 @@ def main(*args, **kwargs):
   Main function to be used by a script.
   """
   try:
-    for line in run(*args, **kwargs):
-      print(line)
+    print(run(*args, **kwargs))
     sys.exit(0)
   except errors.MBError as e:
     sys.stderr.write(f'{e}\n')

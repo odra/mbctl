@@ -47,7 +47,7 @@ class NoAuth:
   """
   def auth(self):
     """
-    This method does nothing, just a place holder for the
+    This method does nothing, just a placeholder for the
     "authentication interface".
     """
     return None

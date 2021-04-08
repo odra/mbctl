@@ -25,12 +25,10 @@ def list(output='text', **kwargs):
   lists builds based on filtered data
   """
   c = httpclient.Client(kwargs['server_url'])
-  code, data = c.request('/module-builds')
+  code, data = c.request('/module-builds/')
   parsed = json.loads(data)
   model = build_lib.models.BuildList(*parsed['items'])
-  output = output
-  if output == 'text':
-    output = 'table'
+  
   return parser.parse(model, output=output)
 
 
@@ -43,7 +41,7 @@ def build(output='text', **kwargs):
   branch = kwargs['branch']
   if not commit:
     commit = scm.get_latest_commit(repository, branch)
-  c = httpclient.Client(kwargs['server_url'])
+  c = httpclient.Client(kwargs['server_url'], auth=httpclient.KRBAuth())
   data = {
     'scmurl': f'{kwargs["repository"]}?#{commit}',
     'branch': kwargs['branch']

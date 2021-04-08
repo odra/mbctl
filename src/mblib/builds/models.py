@@ -1,5 +1,8 @@
+from terminaltables import AsciiTable
+
+
 class Build:
-  _id = ''
+  _id = 0
   name = ''
   owner = ''
   rebuild_strategy = ''
@@ -18,17 +21,29 @@ class Build:
     self.reason = reason
     self.stream = stream
 
-  def data(self):
-    return [
-      ('id', self._id),
-      ('name', self.name),
-      ('owner', self.owner),
-      ('rebuild_strategy', self.rebuild_strategy),
-      ('koji_tag', self.koji_tag),
-      ('status', self.status),
-      ('reason', self.reason),
-      ('stream', self.stream)
-    ]
+  def __str__(self):
+    return '\n'.join([
+      f'ID: {self.id}',
+      f'Name: {self.name}',
+      f'Owner: {self.owner}',
+      f'Rebuild Strategy: {self.rebuild_strategy}',
+      f'Koji Tag: {self.koji_tag}',
+      f'Status: {self.status}',
+      f'Reason: {self.reason}',
+      f'Stream: {self.stream}'
+    ])
+
+  def as_python(self):
+    return {
+      'id': self._id,
+      'name': self.name,
+      'owner': self.owner,
+      'rebuild_strategy': self.rebuild_strategy,
+      'koji_tag': self.koji_tag,
+      'status': self.status,
+      'reason': self.reason,
+      'stream': self.stream
+    }
 
 
 class BuildList:
@@ -47,17 +62,24 @@ class BuildList:
           data['stream'])
       )
 
-  def keys(self):
-    return ['ID', 'Name', 'Owner', 'Strategy', 'Koji Tag', 'Status', 'Reason','Stream']
-
-  def values(self):
-    data = []
+  def __str__(self):
+    output = []
+    keys = ['ID', 'Name', 'Owner', 'Strategy', 'Koji Tag', 'Status', 'Reason','Stream']
+    values = []
+    
     for build in self.builds:
-      data.append([s[1] for s in build.data()])
+      values.append([
+        build._id,
+        build.name,
+        build.owner,
+        build.rebuild_strategy,
+        build.koji_tag,
+        build.status,
+        build.reason,
+        build.stream
+      ])
+    
+    return AsciiTable([keys] + values).table
 
-    return data
-
-  def data(self):
-    return [
-      ('builds', [{k: v for k,v in b.data()} for b in self.builds])
-    ]
+  def as_python(self):
+    return [b.as_python() for b in self.builds]

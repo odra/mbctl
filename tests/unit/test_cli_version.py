@@ -25,24 +25,23 @@ def mocked():
   }
 
 
-
 def test_version_text(expected, mocked):
   with requests_mock.Mocker() as m:
     m.get('https://mbs.fedoraproject.org/module-build-service/1/about', text=json.dumps(mocked))
-    actual = [chunk for chunk in cli.run(['version'])]
+    actual = cli.run(['version'])
   
-  assert [f'{k}: {v}' for k, v in expected.items()] == actual
+  assert '\n'.join([f'{k}: {v}' for k, v in expected.items()]) == actual
 
 
 def test_version_json(expected, mocked):
   with requests_mock.Mocker() as m:
     m.get('https://mbs.fedoraproject.org/module-build-service/1/about', text=json.dumps(mocked))
-    actual = [chunk for chunk in cli.run(['version', '--output', 'json'])]
+    actual = cli.run(['version', '--output', 'json'])
   
-  assert expected == json.loads(actual[0])
+  assert expected == json.loads(actual)
 
 
 def test_version_error():
   with requests_mock.Mocker() as m, pytest.raises(errors.MBError):
     m.get('https://mbs.fedoraproject.org/module-build-service/1/about', exc=requests.exceptions.ConnectTimeout)
-    [chunk for chunk in cli.run(['version'])]
+    cli.run(['version'])
