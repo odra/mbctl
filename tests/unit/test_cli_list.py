@@ -81,7 +81,6 @@ def mocked_json(mocked):
     ]
 
 
-
 def test_list_text(mocked, mocked_text):
     with requests_mock.Mocker() as m:
         m.get('https://mbs.fedoraproject.org/module-build-service/1/module-builds/',
