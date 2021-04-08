@@ -1,3 +1,4 @@
+import shutil
 import tempfile
 
 import git
@@ -13,9 +14,22 @@ def get_latest_commit(repo, branch):
   * reset the repository to the specified branch
   * Get the latest commit hash
   * Delete the temporary directory
+
+  Parameters
+  ----------
+  repo: str
+    A valid public git repository url.
+
+  branch: str
+    A valid and existing branch name of the given repository.
+
+  Returns
+  -------
+  str:
+    The most recent commit hash (sha1)
   """
   local_dir = tempfile.mkdtemp()
-  repo = git.Repo.clone_from(repo, local_repo_dir, depth=1)
+  repo = git.Repo.clone_from(repo, local_dir, depth=1)
   sha = repo.rev_parse(f'origin/{branch}')
   shutil.rmtree(local_dir)
 
