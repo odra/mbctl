@@ -1,4 +1,7 @@
-class Version:
+from mblib import types
+
+
+class Version(types.Model):
   """
   Version data class.
   """

@@ -10,29 +10,51 @@ def parse(model, output='text'):
   """
   Parses a model into other data, possible values are "text" or "json".
 
-  Should return a generator with the parsed data.
+  Parameters
+  ----------
+  model: mblib.types.Model
+    A mblib model implementation
+
+  output: str (default "text")
+    The output type to parse to, valid choices: text, json 
   """
   if output == 'json':
-    return parse_json(model)
-  if output == 'table':
-    return parse_table(model)
-  return parse_text(model)
+    return as_json(model)
+  return as_text(model)
 
 
-def parse_text(model):
+def as_text(model):
   """
   Parses a model into a raw text string.
 
-  The model needs to implement `__str__`.
+  Paramaters
+  ----------
+  model: mblib.types.Model
+    A mblib model implementation
+
+  Returns
+  -------
+  str
+    The string representation of the model invoked by __str__.
   """
   return str(model)
 
 
-def parse_json(model):
+def as_json(model):
   """
   Parses a model into a json string.
 
-  The model needs to implement a `to_python` method
-  to return a object that can be dumped to json, such as a dict or list.
+  It should work as long as `model.as_python()` returns
+  an object that can be dumped to a json string.
+
+  Paramaters
+  ----------
+  model: mblib.types.Model
+    A mblib model implementation
+
+  Returns
+  -------
+  str
+    A json string representation of the model.
   """
   return json.dumps(model.as_python(), indent=4, sort_keys=True)

@@ -4,8 +4,10 @@ This module has data classes for build related data.
 
 from terminaltables import AsciiTable
 
+from mblib import types
 
-class Build:
+
+class Build(types.Model):
   """
   Build data class.
   """
@@ -95,7 +97,7 @@ class Build:
     }
 
 
-class BuildList:
+class BuildList(types.Model):
   """
   BuildList data class.
 
