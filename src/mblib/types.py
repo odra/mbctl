@@ -29,3 +29,21 @@ class Model(ABC):
       The dict reprensentation of a theobject instance.
     """
     raise NotImplemented
+
+
+class HttpAuth(ABC):
+  """
+  Abstract class for http request autentication.
+  """
+
+  @abstractmethod
+  def auth(self):
+    """
+    Defines the authentication logic for whatever is implementing it.
+
+    Returns
+    -------
+    Any
+      Should return any valid object that can be used by requests for request authentication.
+    """
+    pass

@@ -5,10 +5,10 @@ import requests
 from requests.auth import HTTPBasicAuth
 from requests_kerberos import HTTPKerberosAuth
 
-from . import errors
+from . import errors, types
 
 
-class KRBAuth:
+class KRBAuth(types.HttpAuth):
   """
   Kerberos authenticaton type.
   """
@@ -16,10 +16,29 @@ class KRBAuth:
   hostname_override = None
 
   def __init__(self, principal=None, hostname_override=None):
+    """
+    Initialized the KRBAuth class
+
+    Parameters
+    ----------
+    principal: str
+      The kerberos principal to use instead of the default one
+
+    hostname_override: str
+      The kerberos hostname to use instead of the defult one
+    """
     self.principal = principal
     self.hostname_override = hostname_override
 
   def auth(self):
+    """
+    Authenticates the request using kerberos.
+
+    Returns
+    -------
+    request_kerberos.HTTPKerberosAuth
+      A kerberos request object to be used by the requests library
+    """
     params = {}
     if self.principal:
       params['principal'] = self.principal
@@ -29,26 +48,59 @@ class KRBAuth:
     return HTTPKerberosAuth(**params)
 
 
-class BasicAuth:
+class BasicAuth(types.HttpAuth):
+  """
+  Basic HTTP auth class.
+  """
   username = ''
   password = ''
 
-  def __init__(self, usernae, password):
+  def __init__(self, username, password):
+    """
+    Initializes the class by setting some properties.
+
+    Parameters
+    ----------
+    username: str
+      The request username to use
+
+    password: str
+      the request password to use
+
+    Returns
+    -------
+    mblib.httpclient.BasicAuth
+      A BasicAuth instance   
+    """
     self.username = username
     self.password = password
 
   def auth(self):
+    """
+    Authenticates the request using kerberos.
+
+    Returns
+    -------
+    requests.auth.HTTPBasicAuth
+      A basic requests object to be used by the requests library
+    """
     return HTTPBasicAuth(self.username, self.password)
 
 
-class NoAuth:
+class NoAuth(types.HttpAuth):
   """
   No authentication type.
+
+  This class does no authentication at all.
   """
   def auth(self):
     """
-    This method does nothing, just a placeholder for the
-    "authentication interface".
+    This method does nothing.
+
+    Returns
+    -------
+    None
+      It doesn't return anything
     """
     return None
 
@@ -67,16 +119,48 @@ class Client:
 
     Auth type can be 'basic' or 'krb' and defaults to None
     if no value is provided.
+
+    Parameters
+    ----------
+    base_url: str
+      The request base url to be used when doing requests.
+
+    auth: mblib.types.HttpAuth
+      An implemention of the HttpAuth abstract class
+
+    Returns
+    -------
+    mblib.httpclient.CLient
+      A instance of the Client class
     """
+    assert issubclass(auth.__class__, types.HttpAuth)
+
     self.auth = auth
     if base_url:
       self.base_url = base_url
 
   def request(self, path, method='GET', data=None, headers=None):
     """
-    Execute a request based on method parameters.
+    Executes a http request based on method parameters.
 
-    Return a tuple containing the status_code and text output.
+    Parameters
+    ----------
+    path: str
+      The path to make the request to
+    
+    method: str (defaults "GET")
+      The HTTP method to use
+    
+    data: str (defaults None)
+      Optional data to be sent in the request body
+    
+    headers: dict
+      Additional headers to be set in the request
+
+    Returns
+    -------
+    tuple
+      A tuple contaning two items: http response code and the raw request response (str)
     """
     url = f'{self.base_url}{path}'
     try:
