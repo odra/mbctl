@@ -9,22 +9,22 @@ from mblib import version as version_lib
 from mblib import builds as build_lib
 
 
-def version(output='text', **kwargs):
+def version(output='text', ssl_verify=True, **kwargs):
   """
   Shows the CLI version
   """
-  c = httpclient.Client(kwargs['server_url'])
+  c = httpclient.Client(kwargs['server_url'], ssl_verify=ssl_verify)
   code, data = c.request('/about')
   parsed = json.loads(data)
   model = version_lib.models.Version(__version__, parsed['version'], parsed['api_version'])
   
   return parser.parse(model, output=output)
 
-def list(output='text', **kwargs):
+def list(output='text', ssl_verify=True, **kwargs):
   """
   lists builds based on filtered data
   """
-  c = httpclient.Client(kwargs['server_url'])
+  c = httpclient.Client(kwargs['server_url'], ssl_verify=ssl_verify)
   code, data = c.request('/module-builds/')
   parsed = json.loads(data)
   model = build_lib.models.BuildList(*parsed['items'])
@@ -32,7 +32,7 @@ def list(output='text', **kwargs):
   return parser.parse(model, output=output)
 
 
-def build(output='text', **kwargs):
+def build(output='text', ssl_verify=True, **kwargs):
   """
   Imports/triggers a build in MBS.
   """
@@ -41,7 +41,7 @@ def build(output='text', **kwargs):
   branch = kwargs['branch']
   if not commit:
     commit = scm.get_latest_commit(repository, branch)
-  c = httpclient.Client(kwargs['server_url'], auth=httpclient.KRBAuth())
+  c = httpclient.Client(kwargs['server_url'], auth=httpclient.KRBAuth(), ssl_verify=ssl_verify)
   data = {
     'scmurl': f'{kwargs["repository"]}?#{commit}',
     'branch': kwargs['branch']
@@ -50,4 +50,3 @@ def build(output='text', **kwargs):
   if code != 201:
     raise errors.MBError(data)
   yield data
-

@@ -13,6 +13,7 @@ from mblib import errors
 base_parser = argparse.ArgumentParser(add_help=False)
 base_parser.add_argument('--output', '-o', type=str, choices=['text', 'json'], default='text')
 base_parser.add_argument('--server-url', '-s', type=str, default='https://mbs.fedoraproject.org/module-build-service/1')
+base_parser.add_argument('--ssl-verify', '-k', type=bool,  default=True)
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers(help='MBS Client CLI')

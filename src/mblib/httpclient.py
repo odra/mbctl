@@ -112,8 +112,9 @@ class Client:
 
   base_url = None
   auth = None
+  ssl_verify = True
 
-  def __init__(self, base_url, auth=NoAuth()):
+  def __init__(self, base_url, auth=NoAuth(), ssl_verify=True):
     """
     Initializes the object with a base url and authentication type.
 
@@ -136,8 +137,8 @@ class Client:
     assert issubclass(auth.__class__, types.HttpAuth)
 
     self.auth = auth
-    if base_url:
-      self.base_url = base_url
+    self.base_url = base_url
+    self.ssl_verify = ssl_verify
 
   def request(self, path, method='GET', data=None, headers=None):
     """
@@ -164,7 +165,7 @@ class Client:
     """
     url = f'{self.base_url}{path}'
     try:
-      res = requests.request(method, url, data=data, headers=headers, auth=self.auth.auth())
+      res = requests.request(method, url, data=data, headers=headers, auth=self.auth.auth(), verify=self.ssl_verify)
     except requests.exceptions.RequestException as e:
       raise errors.MBError(str(e))
 
