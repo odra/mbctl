@@ -10,6 +10,7 @@ project/install:
 .PHONY: project/build
 project/build:
 	@poetry build
+	@poetry run dephell deps convert
 
 .PHONY: project
 project: project/build project/install

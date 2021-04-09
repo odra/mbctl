@@ -2,10 +2,10 @@ import json
 
 import pytest
 
-from mblib import parser
+from mblib import parser, types
 
 
-class Model:
+class Model(types.Model):
   def __init__(self, name):
     self.name = name
 

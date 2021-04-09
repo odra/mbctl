@@ -5,6 +5,8 @@ import json
 
 from terminaltables import AsciiTable
 
+from . import types
+
 
 def parse(model, output='text'):
   """
@@ -37,6 +39,8 @@ def as_text(model):
   str
     The string representation of the model invoked by __str__.
   """
+  assert issubclass(model.__class__, types.Model)
+
   return str(model)
 
 
@@ -57,4 +61,6 @@ def as_json(model):
   str
     A json string representation of the model.
   """
+  assert issubclass(model.__class__, types.Model)
+  
   return json.dumps(model.as_python(), indent=4, sort_keys=True)
